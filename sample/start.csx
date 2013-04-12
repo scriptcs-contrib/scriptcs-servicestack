@@ -1,5 +1,3 @@
-[Route("/hello")]
-[Route("/hello/{Name}")]
 public class HelloRequest : IReturn<HelloResponse>
 {
 	public string Name { get; set; }
@@ -10,18 +8,44 @@ public class HelloResponse
 	public string Response { get; set; }
 }
 
-public class HelloWorldService : Service
+public interface IGreeter
 {
-	public HelloResponse Get(HelloRequest request)
+	string Greet(string name);
+}
+
+public class Greeter : IGreeter
+{
+	public string Greet(string name)
 	{
-		if (!string.IsNullOrEmpty(request.Name))
+		if (!string.IsNullOrEmpty(name))
 		{
-			var response = string.Format("Hello {0}!", request.Name);
-			return new HelloResponse { Response = response };
+			return string.Format("Hello {0}!", request.Name);
 		}
 
-		return new HelloResponse { Response = "Hello stranger!" };
+		return "Hello stranger!";
 	}
 }
 
-Require<ServiceStackPack>().StartHost("http://localhost:8080/");
+public class HelloWorldService : Service
+{
+	private IGreeter _greeter;
+
+	public HelloWorldService(IGreeter greeter)
+	{
+		_greeter = greeter;
+	}
+
+	public HelloResponse Get(HelloRequest request)
+	{
+		var greeting = _greeter.Greet(request.Name);
+		return new HelloResponse { Response = greeting };
+	}
+}
+
+Require<ServiceStackPack>().StartHost("http://localhost:8080/", host =>
+{
+	host.Routes.Add<HelloRequest>("/hello");	
+	host.Routes.Add<HelloRequest>("/hello/{Name}");	
+
+	host.Container.Register<IGreeter>(c => new Greeter());
+});
