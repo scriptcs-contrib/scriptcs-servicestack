@@ -1,16 +1,16 @@
 public class HelloRequest : IReturn<HelloResponse>
 {
-	public string Name { get; set; }
+    public string Name { get; set; }
 }
 
 public class HelloResponse
 {
-	public string Response { get; set; }
+    public string Response { get; set; }
 }
 
 public interface IGreeter
 {
-	string Greet(string name);
+    string Greet(string name);
 }
 
 public class Greeter : IGreeter
@@ -22,30 +22,30 @@ public class Greeter : IGreeter
 			return string.Format("Hello {0}!", name);
 		}
 
-		return "Hello stranger!";
-	}
+        return "Hello stranger!";
+    }
 }
 
-public class HelloWorldService : Service
+public class HelloService : Service
 {
-	private IGreeter _greeter;
+    private IGreeter _greeter;
 
-	public HelloWorldService(IGreeter greeter)
-	{
-		_greeter = greeter;
-	}
+    public HelloService(IGreeter greeter)
+    {
+        _greeter = greeter;
+    }
 
-	public HelloResponse Get(HelloRequest request)
-	{
-		var greeting = _greeter.Greet(request.Name);
-		return new HelloResponse { Response = greeting };
-	}
+    public HelloResponse Get(HelloRequest request)
+    {
+        var greeting = _greeter.Greet(request.Name);
+        return new HelloResponse { Response = greeting };
+    }
 }
 
 Require<ServiceStackPack>().StartHost("http://localhost:8080/", configurationBuilder: host =>
 {
-	host.Routes.Add<HelloRequest>("/hello");	
-	host.Routes.Add<HelloRequest>("/hello/{Name}");	
+    host.Routes.Add<HelloRequest>("/hello");	
+    host.Routes.Add<HelloRequest>("/hello/{Name}");	
 
-	host.Container.Register<IGreeter>(c => new Greeter());
+    host.Container.Register<IGreeter>(c => new Greeter());
 });
