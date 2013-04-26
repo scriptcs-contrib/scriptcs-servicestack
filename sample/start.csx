@@ -19,7 +19,7 @@ public class Greeter : IGreeter
 	{
 		if (!string.IsNullOrEmpty(name))
 		{
-			return string.Format("Hello {0}!", request.Name);
+			return string.Format("Hello {0}!", name);
 		}
 
 		return "Hello stranger!";
@@ -42,7 +42,7 @@ public class HelloWorldService : Service
 	}
 }
 
-Require<ServiceStackPack>().StartHost("http://localhost:8080/", host =>
+Require<ServiceStackPack>().StartHost("http://localhost:8080/", configurationBuilder: host =>
 {
 	host.Routes.Add<HelloRequest>("/hello");	
 	host.Routes.Add<HelloRequest>("/hello/{Name}");	
